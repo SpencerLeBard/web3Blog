@@ -25,6 +25,7 @@
     "react-dom": "18.0.0",
     "react-markdown": "^8.0.3",
     "react-simplemde-editor": "^5.0.2",
+    "solidity": "^0.0.1",
     "web3modal": "^1.9.7",
     "yarn": "^1.22.18"
   },
