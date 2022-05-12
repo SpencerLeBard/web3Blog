@@ -41,7 +41,6 @@ export default function Post({ post }) {
               )
             }
             {
-              /* if the post has a cover image, render it */
               post.coverImage && (
                 <image
                   src={post.coverImage}
