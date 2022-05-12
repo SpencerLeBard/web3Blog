@@ -26,36 +26,37 @@ export default function Post() {
   const { id } = router.query
 
   useEffect(() => {
+    async function fetchPost() {
+        /* we first fetch the individual post by ipfs hash from the network */
+        if (!id) return
+        let provider
+        if (process.env.NEXT_PUBLIC_ENVIRONMENT === 'local') {
+          provider = new ethers.providers.JsonRpcProvider()
+        } else if (process.env.NEXT_PUBLIC_ENVIRONMENT === 'testnet') {
+          provider = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.matic.today')
+        } else {
+          provider = new ethers.providers.JsonRpcProvider('https://polygon-rpc.com/')
+        }
+        const contract = new ethers.Contract(contractAddress, Blog.abi, provider)
+        const val = await contract.fetchPost(id)
+        const postId = val[0].toNumber()
+    
+        /* next we fetch the IPFS metadata from the network */
+        const ipfsUrl = `${ipfsURI}/${id}`
+        const response = await fetch(ipfsUrl)
+        const data = await response.json()
+        if(data.coverImage) {
+          let coverImagePath = `${ipfsURI}/${data.coverImage}`
+          data.coverImagePath = coverImagePath
+        }
+        /* finally we append the post ID to the post data */
+        /* we need this ID to make updates to the post */
+        data.id = postId;
+        setPost(data)
+      }
     fetchPost()
   }, [id])
-  async function fetchPost() {
-    /* we first fetch the individual post by ipfs hash from the network */
-    if (!id) return
-    let provider
-    if (process.env.NEXT_PUBLIC_ENVIRONMENT === 'local') {
-      provider = new ethers.providers.JsonRpcProvider()
-    } else if (process.env.NEXT_PUBLIC_ENVIRONMENT === 'testnet') {
-      provider = new ethers.providers.JsonRpcProvider('https://rpc-mumbai.matic.today')
-    } else {
-      provider = new ethers.providers.JsonRpcProvider('https://polygon-rpc.com/')
-    }
-    const contract = new ethers.Contract(contractAddress, Blog.abi, provider)
-    const val = await contract.fetchPost(id)
-    const postId = val[0].toNumber()
-
-    /* next we fetch the IPFS metadata from the network */
-    const ipfsUrl = `${ipfsURI}/${id}`
-    const response = await fetch(ipfsUrl)
-    const data = await response.json()
-    if(data.coverImage) {
-      let coverImagePath = `${ipfsURI}/${data.coverImage}`
-      data.coverImagePath = coverImagePath
-    }
-    /* finally we append the post ID to the post data */
-    /* we need this ID to make updates to the post */
-    data.id = postId;
-    setPost(data)
-  }
+  
 
   async function savePostToIpfs() {
     try {
