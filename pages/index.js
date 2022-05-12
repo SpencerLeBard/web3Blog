@@ -28,7 +28,6 @@ export default function Home(props) {
     <div>
       <div className={postList}>
         {
-          /* map over the posts array and render a button with the post title */
           posts.map((post, index) => (
             <Link href={`/post/${post[2]}`} key={index}>
               <a>
