@@ -131,12 +131,3 @@ const buttonStyle = css`
   cursor: pointer;
   box-shadow: 7px 7px rgba(0, 0, 0, .1);
 `
-
-const arrow = css`
-  width: 35px;
-  margin-left: 30px;
-`
-
-const smallArrow = css`
-  width: 25px;
-`
